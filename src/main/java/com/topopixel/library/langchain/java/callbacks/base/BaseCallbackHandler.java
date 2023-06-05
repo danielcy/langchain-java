@@ -1,5 +1,6 @@
 package com.topopixel.library.langchain.java.callbacks.base;
 
+import com.topopixel.library.langchain.java.schema.BaseMessage;
 import com.topopixel.library.langchain.java.schema.LLMResult;
 import java.util.*;
 import lombok.Data;
@@ -52,9 +53,9 @@ public class BaseCallbackHandler {
         return callbackManager.onLLMStart(serialized, prompts, runId, parentRunId, kwargs);
     }
 
-    public Object onChatModelStart(Map<String, Object> serialized, List<String> prompts,
+    public Object onChatModelStart(Map<String, Object> serialized, List<List<BaseMessage>> messages,
         UUID runId, UUID parentRunId, Object... kwargs) {
-        return callbackManager.onChatModelStart(serialized, prompts, runId, parentRunId, kwargs);
+        return callbackManager.onChatModelStart(serialized, messages, runId, parentRunId, kwargs);
     }
 
     public Object onChainStart(Map<String, Object> serialized, Map<String, Object> inputs,

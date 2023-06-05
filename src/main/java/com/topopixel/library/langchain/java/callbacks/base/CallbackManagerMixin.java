@@ -1,7 +1,8 @@
 package com.topopixel.library.langchain.java.callbacks.base;
 
+import com.topopixel.library.langchain.java.exception.NotImplementedException;
+import com.topopixel.library.langchain.java.schema.BaseMessage;
 import java.util.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Mixin for callback manager.
@@ -13,9 +14,9 @@ public class CallbackManagerMixin {
         return null;
     }
 
-    public Object onChatModelStart(Map<String, Object> serialized, List<String> prompts,
+    public Object onChatModelStart(Map<String, Object> serialized, List<List<BaseMessage>> messages,
         UUID runId, UUID parentRunId, Object... kwargs) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("not implemented onChatModelStart");
     }
 
     public Object onChainStart(Map<String, Object> serialized, Map<String, Object> inputs,

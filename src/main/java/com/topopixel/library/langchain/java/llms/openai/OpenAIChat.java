@@ -3,6 +3,7 @@ package com.topopixel.library.langchain.java.llms.openai;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.completion.CompletionResult;
 import com.theokanning.openai.completion.chat.*;
+import com.topopixel.library.langchain.java.callbacks.manager.CallbackManagerForLLMRun;
 import com.topopixel.library.langchain.java.llms.base.BaseLLM;
 import com.topopixel.library.langchain.java.llms.openai.sdk.OpenAiService;
 import com.topopixel.library.langchain.java.schema.Generation;
@@ -84,7 +85,8 @@ public class OpenAIChat extends BaseLLM {
 
     // TODO: callback manager
     @Override
-    protected LLMResult internalGenerate(List<String> prompts, List<String> stop) {
+    protected LLMResult internalGenerate(List<String> prompts, List<String> stop,
+        CallbackManagerForLLMRun runManager) {
         List<ChatMessage> messages = prefixMessages;
         messages.add(new ChatMessage("user", prompts.get(0)));
         ChatCompletionRequest request = ChatCompletionRequest.builder()

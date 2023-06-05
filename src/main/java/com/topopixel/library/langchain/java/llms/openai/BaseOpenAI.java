@@ -3,6 +3,7 @@ package com.topopixel.library.langchain.java.llms.openai;
 
 import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.completion.CompletionResult;
+import com.topopixel.library.langchain.java.callbacks.manager.CallbackManagerForLLMRun;
 import com.topopixel.library.langchain.java.llms.base.BaseLLM;
 import com.topopixel.library.langchain.java.llms.openai.sdk.OpenAiService;
 import com.topopixel.library.langchain.java.schema.Generation;
@@ -11,9 +12,10 @@ import com.topopixel.library.langchain.java.utils.LangChainUtils;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 public abstract class BaseOpenAI extends BaseLLM {
 
     public OpenAiService service;
@@ -86,7 +88,8 @@ public abstract class BaseOpenAI extends BaseLLM {
 
     // TODO: callback manager
     @Override
-    protected LLMResult internalGenerate(List<String> prompts, List<String> stop) {
+    protected LLMResult internalGenerate(List<String> prompts, List<String> stop,
+        CallbackManagerForLLMRun runManager) {
         // for now only support 1 string elem
         // TODO: support streaming
         // TODO: support sub prompts

@@ -3,10 +3,12 @@ package com.topopixel.library.langchain.java.llms.base;
 import com.topopixel.library.langchain.java.GlobalValues;
 import com.topopixel.library.langchain.java.callbacks.base.BaseCallbackHandler;
 import com.topopixel.library.langchain.java.callbacks.manager.CallbackManager;
+import com.topopixel.library.langchain.java.callbacks.manager.CallbackManagerForLLMRun;
 import com.topopixel.library.langchain.java.language.BaseLanguageModel;
 import com.topopixel.library.langchain.java.llms.base.LLMBaseUtils.GetPromptsResult;
 import com.topopixel.library.langchain.java.schema.LLMResult;
 import com.topopixel.library.langchain.java.schema.PromptValue;
+import com.topopixel.library.langchain.java.utils.ClassUtils;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
@@ -41,29 +43,36 @@ public abstract class BaseLLM extends BaseLanguageModel {
         params.put("stop", stop);
         GetPromptsResult gpr = LLMBaseUtils.getPrompts(params, prompts);
         Boolean disregardCache = cache != null && !cache;
-        // TODO: callback manager
         CallbackManager callbackManager = CallbackManager.configure(callbacks,
             this.callbacks, verbose);
 
-        // TODO: cache
         if (!GlobalValues.llmCache.isPresent() || disregardCache) {
+            // TODO: cache
             // TODO: callback manager
+            var runManager = callbackManager.onLLMStart(
+                new HashMap<String, Object>() {{
+                    put("name", getClass().getName());
+                }}, prompts, null, ClassUtils.getParams(this)
+            );
             LLMResult output;
             try {
-                output = internalGenerate(prompts, stop);
+                output = internalGenerate(prompts, stop, runManager);
             } catch (Exception e) {
-                // TODO: callback manager
+                runManager.onLLMError(e);
                 return null;
             }
             return output;
         }
+
+        // TODO: cache
 
         // TODO: missing prompts
 
         return null;
     }
 
-    protected abstract LLMResult internalGenerate(List<String> prompts, List<String> stop);
+    protected abstract LLMResult internalGenerate(List<String> prompts, List<String> stop,
+        CallbackManagerForLLMRun runManager);
 
     private Map<String, Object> identifyingParams() {
         return new HashMap<>();

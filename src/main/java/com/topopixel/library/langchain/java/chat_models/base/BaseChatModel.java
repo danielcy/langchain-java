@@ -1,13 +1,30 @@
 package com.topopixel.library.langchain.java.chat_models.base;
 
+import com.topopixel.library.langchain.java.callbacks.base.BaseCallbackHandler;
+import com.topopixel.library.langchain.java.callbacks.manager.CallbackManager;
 import com.topopixel.library.langchain.java.language.BaseLanguageModel;
 import com.topopixel.library.langchain.java.schema.*;
+import com.topopixel.library.langchain.java.utils.ClassUtils;
 import java.util.*;
 import java.util.stream.Collectors;
+import lombok.var;
 
 public abstract class BaseChatModel extends BaseLanguageModel {
 
-    public LLMResult generate(List<List<BaseMessage>> messages, List<String> stop) {
+    private List<BaseCallbackHandler> callbacks;
+
+    private boolean verbose = false;
+
+    public LLMResult generate(List<List<BaseMessage>> messages, List<String> stop, List<BaseCallbackHandler> callbacks) {
+
+        CallbackManager callbackManager = CallbackManager.configure(callbacks,
+            this.callbacks, verbose);
+        var runManager = callbackManager.onChatModelStart(
+            messages,
+            new HashMap<String, Object>() {{
+                put("name", getClass().getName());
+            }}, null, ClassUtils.getParams(this)
+        );
 
         List<ChatResult> results = new ArrayList<>();
         for (List<BaseMessage> m: messages) {
@@ -27,10 +44,11 @@ public abstract class BaseChatModel extends BaseLanguageModel {
     }
 
     @Override
-    public LLMResult generatePrompt(List<PromptValue> prompts, List<String> stop) {
+    public LLMResult generatePrompt(List<PromptValue> prompts, List<String> stop,
+        List<BaseCallbackHandler> callbacks) {
         List<List<BaseMessage>> promptMessages = prompts.stream()
             .map(PromptValue::toMessage).collect(Collectors.toList());
-        return generate(promptMessages, stop);
+        return generate(promptMessages, stop, callbacks);
     }
 
     protected abstract ChatResult internalGenerate(List<BaseMessage> messages, List<String> stop);
@@ -44,8 +62,8 @@ public abstract class BaseChatModel extends BaseLanguageModel {
         return new HashMap<>();
     }
 
-    public BaseMessage run(List<BaseMessage> messages, List<String> output) {
-        Generation generation = generate(Arrays.asList(messages), output).getGenerations().get(0).get(0);
+    public BaseMessage run(List<BaseMessage> messages, List<String> output, List<BaseCallbackHandler> callbacks) {
+        Generation generation = generate(Arrays.asList(messages), output, callbacks).getGenerations().get(0).get(0);
         if (generation instanceof ChatGeneration) {
             return ((ChatGeneration) generation).getMessage();
         }
@@ -53,7 +71,7 @@ public abstract class BaseChatModel extends BaseLanguageModel {
     }
 
     public BaseMessage run(List<BaseMessage> messages) {
-        return run(messages, null);
+        return run(messages, null, null);
     }
 
     @Override

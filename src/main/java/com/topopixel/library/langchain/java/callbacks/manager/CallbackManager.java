@@ -4,7 +4,6 @@ import com.topopixel.library.langchain.java.callbacks.base.BaseCallbackHandler;
 import com.topopixel.library.langchain.java.callbacks.base.BaseCallbackManager;
 import com.topopixel.library.langchain.java.schema.BaseMessage;
 import java.util.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class CallbackManager extends BaseCallbackManager {
 
@@ -38,7 +37,7 @@ public class CallbackManager extends BaseCallbackManager {
             getParentRunId());
     }
 
-    public CallbackManagerForLLMRun onChatModelStart(List<BaseMessage> messages, Map<String, Object> serialized,
+    public CallbackManagerForLLMRun onChatModelStart(List<List<BaseMessage>> messages, Map<String, Object> serialized,
         UUID runId, Object... kwargs) {
         if (runId == null) {
             runId = UUID.randomUUID();

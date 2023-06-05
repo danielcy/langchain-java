@@ -1,12 +1,14 @@
 package com.topopixel.library.langchain.java.callbacks.manager;
 
 import com.topopixel.library.langchain.java.callbacks.base.BaseCallbackHandler;
+import com.topopixel.library.langchain.java.exception.NotImplementedException;
+import com.topopixel.library.langchain.java.schema.BaseMessage;
+import com.topopixel.library.langchain.java.schema.SchemaUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.var;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class CallbackManagerUtils {
 
@@ -18,7 +20,8 @@ public class CallbackManagerUtils {
     static <T> T configure(Class<T> clazz, List<BaseCallbackHandler> inheritableCallbacks,
         List<BaseCallbackHandler> localCallbacks, boolean verbose) {
         try {
-            T callbackManager = clazz.newInstance();
+            Constructor<T> defaultConst = clazz.getConstructor(List.class);
+            T callbackManager = defaultConst.newInstance(new ArrayList<>());
             if (inheritableCallbacks != null || localCallbacks != null) {
                 List<BaseCallbackHandler> inheritableCallbacks_ = inheritableCallbacks != null ? inheritableCallbacks : new ArrayList<>();
                 Constructor<T> constructor = clazz.getConstructor(List.class, List.class);
@@ -61,8 +64,25 @@ public class CallbackManagerUtils {
                 }
                 Method event = handler.getClass().getMethod(eventName);
                 event.invoke(args);
-            } catch (NoSuchMethodException e) {
-                //TODO: on chat model start
+            } catch (NotImplementedException e) {
+                if ("onChatModelStart".equals(eventName)) {
+                    if (messageStrings == null) {
+                        List<List<BaseMessage>> msgArg = (List<List<BaseMessage>>)args[1];
+                        messageStrings = msgArg.stream()
+                            .map(SchemaUtils::getBufferString)
+                            .collect(Collectors.toList());
+                    }
+                    List<Object> newArgs = new ArrayList<>();
+                    if (args.length > 2) {
+                        for (int i = 2; i < args.length; i++) {
+                            newArgs.add(args[i]);
+                        }
+                    }
+                    handleEvent(Arrays.asList(handler), "onLLMStart",
+                        "isIgnoreLLM", args[0], messageStrings,
+                        newArgs.toArray());
+
+                }
             } catch (Exception e) {
                 // TODO: exception
             }
