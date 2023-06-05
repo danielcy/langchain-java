@@ -1,6 +1,8 @@
 package com.topopixel.library.langchain.java.llms.base;
 
 import com.topopixel.library.langchain.java.GlobalValues;
+import com.topopixel.library.langchain.java.callbacks.base.BaseCallbackHandler;
+import com.topopixel.library.langchain.java.callbacks.manager.CallbackManager;
 import com.topopixel.library.langchain.java.language.BaseLanguageModel;
 import com.topopixel.library.langchain.java.llms.base.LLMBaseUtils.GetPromptsResult;
 import com.topopixel.library.langchain.java.schema.LLMResult;
@@ -17,7 +19,9 @@ public abstract class BaseLLM extends BaseLanguageModel {
 
     private Boolean cache;
 
-    //TODO verbose
+    private List<BaseCallbackHandler> callbacks;
+
+    private boolean verbose = false;
 
     //TODO callback & callback_manager
 
@@ -26,7 +30,8 @@ public abstract class BaseLLM extends BaseLanguageModel {
      * Run the LLM on the given prompt and input.
      */
     // TODO: callback
-    public LLMResult genertate(List<String> prompts, List<String> stop) {
+    public LLMResult genertate(List<String> prompts, List<String> stop,
+        List<BaseCallbackHandler> callbacks) {
         if (prompts == null || prompts.size() == 0) {
             // TODO: log error;
             return null;
@@ -37,6 +42,8 @@ public abstract class BaseLLM extends BaseLanguageModel {
         GetPromptsResult gpr = LLMBaseUtils.getPrompts(params, prompts);
         Boolean disregardCache = cache != null && !cache;
         // TODO: callback manager
+        CallbackManager callbackManager = CallbackManager.configure(callbacks,
+            this.callbacks, verbose);
 
         // TODO: cache
         if (!GlobalValues.llmCache.isPresent() || disregardCache) {
@@ -78,20 +85,23 @@ public abstract class BaseLLM extends BaseLanguageModel {
 
     @Override
     public LLMResult generatePrompt(List<PromptValue> prompts,
-        List<String> stop) {
+        List<String> stop, List<BaseCallbackHandler> callbacks) {
         List<String> promptStrings = prompts.stream()
             .map(PromptValue::toString).collect(Collectors.toList());
-        return genertate(promptStrings, stop);
+        return genertate(promptStrings, stop, callbacks);
     }
 
-    // callback manager
-    public String run(String prompt, List<String> stop) {
-        LLMResult response = genertate(Arrays.asList(prompt), stop);
+    public String run(String prompt, List<String> stop, List<BaseCallbackHandler> callbacks) {
+        LLMResult response = genertate(Arrays.asList(prompt), stop, callbacks);
         return response.getGenerations().get(0).get(0).getText();
     }
 
     public String run(String prompt) {
-        return run(prompt, null);
+        return run(prompt, null, null);
+    }
+
+    public String run (String prompt, List<BaseCallbackHandler> callbacks) {
+        return run(prompt, null, callbacks);
     }
 
     @Override

@@ -9,15 +9,15 @@ import java.util.UUID;
  */
 public class LLMManagerMixin {
 
-    public Object onLLMNewToken(String token, UUID runId, UUID parentRunId, Map<String, Object> kwargs) {
+    public Object onLLMNewToken(String token, UUID runId, UUID parentRunId, Object... kwargs) {
         return null;
     }
 
-    public Object onLLMEnd(LLMResult response, UUID runId, UUID parentRunId, Map<String, Object> kwargs) {
+    public Object onLLMEnd(LLMResult response, UUID runId, UUID parentRunId, Object... kwargs) {
         return null;
     }
 
-    public Object onLLMError(Exception error, UUID runId, UUID parentRunId, Map<String, Object> kwargs) {
+    public Object onLLMError(Exception error, UUID runId, UUID parentRunId, Object... kwargs) {
         return null;
     }
 }

@@ -6,15 +6,16 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.var;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class CallbackManagerUtils {
 
-    public static <T> T configure(Class<T> clazz, List<BaseCallbackHandler> inheritableCallbacks,
+    static <T> T configure(Class<T> clazz, List<BaseCallbackHandler> inheritableCallbacks,
         List<BaseCallbackHandler> localCallbacks) {
         return configure(clazz, inheritableCallbacks, localCallbacks, false);
     }
 
-    public static <T> T configure(Class<T> clazz, List<BaseCallbackHandler> inheritableCallbacks,
+    static <T> T configure(Class<T> clazz, List<BaseCallbackHandler> inheritableCallbacks,
         List<BaseCallbackHandler> localCallbacks, boolean verbose) {
         try {
             T callbackManager = clazz.newInstance();
@@ -40,5 +41,31 @@ public class CallbackManagerUtils {
             return null;
         }
 
+    }
+
+    static void handleEvent(List<BaseCallbackHandler> handlers, String eventName,
+        String ignoreConditionName, Object...args) {
+        List<String> messageStrings = null;
+        for (var handler: handlers) {
+            try {
+                if (ignoreConditionName != null) {
+                    try {
+                        Method mIgnore = handler.getClass().getMethod(ignoreConditionName);
+                        Boolean result = (Boolean) mIgnore.invoke(handler);
+                        if (result) {
+                            continue;
+                        }
+                    } catch (NoSuchMethodException e) {
+                        // no such ignore method
+                    }
+                }
+                Method event = handler.getClass().getMethod(eventName);
+                event.invoke(args);
+            } catch (NoSuchMethodException e) {
+                //TODO: on chat model start
+            } catch (Exception e) {
+                // TODO: exception
+            }
+        }
     }
 }

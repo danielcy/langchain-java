@@ -5,11 +5,11 @@ import java.util.UUID;
 
 public class ToolManagerMixin {
 
-    public Object onToolEnd(String output, UUID runId, UUID parentRunId, Map<String, Object> kwargs) {
+    public Object onToolEnd(String output, UUID runId, UUID parentRunId, Object... kwargs) {
         return null;
     }
 
-    public Object onToolError(Exception e, UUID runId, UUID parentRunId, Map<String, Object> kwargs) {
+    public Object onToolError(Exception e, UUID runId, UUID parentRunId, Object... kwargs) {
         return null;
     }
 }

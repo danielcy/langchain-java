@@ -1,5 +1,6 @@
 package com.topopixel.library.langchain.java.language;
 
+import com.topopixel.library.langchain.java.callbacks.base.BaseCallbackHandler;
 import com.topopixel.library.langchain.java.schema.LLMResult;
 import com.topopixel.library.langchain.java.schema.PromptValue;
 import java.util.List;
@@ -12,7 +13,7 @@ public abstract class BaseLanguageModel {
      */
     //TODO: callbacks
     public abstract LLMResult generatePrompt(List<PromptValue> prompts,
-        List<String> stop);
+        List<String> stop, List<BaseCallbackHandler> callbacks);
 
     //TODO: async def agenerate_prompt
 

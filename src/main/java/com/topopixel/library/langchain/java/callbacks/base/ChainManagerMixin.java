@@ -5,11 +5,11 @@ import java.util.UUID;
 
 public class ChainManagerMixin {
 
-    public Object onChainEnd(Map<String, Object> outputs, UUID runId, UUID parentRunId, Map<String, Object> kwargs) {
+    public Object onChainEnd(Map<String, Object> outputs, UUID runId, UUID parentRunId, Object... kwargs) {
         return null;
     }
 
-    public Object onChainError(Exception error, UUID runId, UUID parentRunId, Map<String, Object> kwargs) {
+    public Object onChainError(Exception error, UUID runId, UUID parentRunId, Object... kwargs) {
         return null;
     }
 
