@@ -13,6 +13,13 @@ public class CallbackManager extends BaseCallbackManager {
 
     public CallbackManager(
         List<BaseCallbackHandler> handlers,
+        List<BaseCallbackHandler> inheritableHandlers
+    ) {
+        super(handlers, inheritableHandlers);
+    }
+
+    public CallbackManager(
+        List<BaseCallbackHandler> handlers,
         List<BaseCallbackHandler> inheritableHandlers,
         UUID parentRunId
     ) {

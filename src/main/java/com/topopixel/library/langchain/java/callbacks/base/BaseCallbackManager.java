@@ -21,6 +21,13 @@ public class BaseCallbackManager extends CallbackManagerMixin {
 
     public BaseCallbackManager(
         List<BaseCallbackHandler> handlers,
+        List<BaseCallbackHandler> inheritableHandlers
+    ) {
+        this(handlers, inheritableHandlers, null);
+    }
+
+    public BaseCallbackManager(
+        List<BaseCallbackHandler> handlers,
         List<BaseCallbackHandler> inheritableHandlers,
         UUID parentRunId
     ) {
