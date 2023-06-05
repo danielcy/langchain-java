@@ -13,5 +13,5 @@ public abstract class PromptValue {
     /**
      * Return prompt as messages.
      */
-    public abstract List<BaseMessage> toMessage();
+    public abstract List<BaseMessage> toMessages();
 }

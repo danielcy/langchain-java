@@ -47,7 +47,7 @@ public abstract class BaseChatModel extends BaseLanguageModel {
     public LLMResult generatePrompt(List<PromptValue> prompts, List<String> stop,
         List<BaseCallbackHandler> callbacks) {
         List<List<BaseMessage>> promptMessages = prompts.stream()
-            .map(PromptValue::toMessage).collect(Collectors.toList());
+            .map(PromptValue::toMessages).collect(Collectors.toList());
         return generate(promptMessages, stop, callbacks);
     }
 
