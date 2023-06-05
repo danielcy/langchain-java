@@ -3,9 +3,10 @@ package com.topopixel.library.langchain.java.prompts.base;
 import com.topopixel.library.langchain.java.schema.*;
 import java.util.Arrays;
 import java.util.List;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 public class StringPromptValue extends PromptValue {
 
     private String text;
