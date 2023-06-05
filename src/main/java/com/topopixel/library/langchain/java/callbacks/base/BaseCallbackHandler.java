@@ -3,6 +3,7 @@ package com.topopixel.library.langchain.java.callbacks.base;
 import com.topopixel.library.langchain.java.schema.BaseMessage;
 import com.topopixel.library.langchain.java.schema.LLMResult;
 import java.util.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
@@ -13,6 +14,17 @@ public class BaseCallbackHandler {
     public ToolManagerMixin toolManager = new ToolManagerMixin();
     public CallbackManagerMixin callbackManager = new CallbackManagerMixin();
     public RunManagerMixin runManagerMixin = new RunManagerMixin();
+
+    @Builder
+    public BaseCallbackHandler(LLMManagerMixin llmManager, ChainManagerMixin chainManager,
+        ToolManagerMixin toolManager, CallbackManagerMixin callbackManager,
+        RunManagerMixin runManagerMixin) {
+        this.llmManager = llmManager != null ? llmManager : new LLMManagerMixin();
+        this.chainManager = chainManager != null ? chainManager : new ChainManagerMixin();
+        this.toolManager = toolManager != null ? toolManager : new ToolManagerMixin();
+        this.callbackManager = callbackManager != null ? callbackManager : new CallbackManagerMixin();
+        this.runManagerMixin = runManagerMixin != null ? runManagerMixin : new RunManagerMixin();
+    }
 
     private boolean ignoreLLM = false ;
     private boolean ignoreChain = false;

@@ -99,7 +99,7 @@ public class ChatOpenAI extends BaseChatModel {
         List<ChatGeneration> generations = new ArrayList<>();
         for (var res: response.getChoices()) {
             BaseMessage message = ChatModelBaseUtils.convertToBaseMessage(res.getMessage());
-            generations.add(ChatGeneration.chatBuilder().message(message).build());
+            generations.add(ChatGeneration.chatBuilder().message(message).text(message.getContent()).build());
         }
         Map<String, Object> llmOutput = new HashMap<String, Object>() {{
             put("token_usage", response.getUsage());

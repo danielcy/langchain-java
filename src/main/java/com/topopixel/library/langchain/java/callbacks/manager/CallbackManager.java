@@ -13,6 +13,13 @@ public class CallbackManager extends BaseCallbackManager {
 
     public CallbackManager(
         List<BaseCallbackHandler> handlers,
+        UUID parentRunId
+    ) {
+        super(handlers, null, parentRunId);
+    }
+
+    public CallbackManager(
+        List<BaseCallbackHandler> handlers,
         List<BaseCallbackHandler> inheritableHandlers
     ) {
         super(handlers, inheritableHandlers);
@@ -49,7 +56,7 @@ public class CallbackManager extends BaseCallbackManager {
             getParentRunId());
     }
 
-    public CallbackManagerForLLMRun onChainStart(Map<String, Object> serialized, Map<String, Object> inputs,
+    public CallbackManagerForChainRun onChainStart(Map<String, Object> serialized, Map<String, Object> inputs,
         UUID runId, Object... kwargs) {
         if (runId == null) {
             runId = UUID.randomUUID();
@@ -57,7 +64,7 @@ public class CallbackManager extends BaseCallbackManager {
         CallbackManagerUtils.handleEvent(getHandlers(), "onChainStart",
             "isIgnoreChain", serialized, inputs, runId,
             getParentRunId(), kwargs);
-        return new CallbackManagerForLLMRun(runId, getHandlers(), getInheritableHandlers(),
+        return new CallbackManagerForChainRun(runId, getHandlers(), getInheritableHandlers(),
             getParentRunId());
     }
 
