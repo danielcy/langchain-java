@@ -31,3 +31,24 @@ public class Main {
     }
 }
 ```
+### 3. llm chain
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        PromptTemplate template = new PromptTemplate(Arrays.asList("product"),
+            "What is a good name for a company that makes {product}?");
+
+        OpenAIChatConfig config = OpenAIChatConfig.builder()
+            .maxTokens(1024)
+            .build();
+        ChatOpenAI llm = new ChatOpenAI(config);
+        LLMChain chain = LLMChain.builder()
+            .llm(llm)
+            .prompt(template)
+            .build();
+        String result = chain.run(new HashMap<String, Object>(){{put("product", "colorful socks");}});
+        System.out.println(result);
+    }
+}
+```
