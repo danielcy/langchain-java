@@ -4,7 +4,6 @@ import com.topopixel.library.langchain.java.schema.BaseMessage;
 import com.topopixel.library.langchain.java.schema.LLMResult;
 import java.util.*;
 import lombok.Data;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 @Data
 public class BaseCallbackHandler {

@@ -16,7 +16,7 @@ public abstract class BasePromptTemplate {
 
     // TODO partial variable
 
-    public abstract PromptValue formatPrompt(Object... kwargs);
+    public abstract PromptValue formatPrompt(Map<String, Object> kwargs);
 
     // TODO: partial function
 
@@ -36,7 +36,7 @@ public abstract class BasePromptTemplate {
      *             prompt.format(variable1="foo")
      *         """
      */
-    public abstract String format(Object... kwargs);
+    public abstract String format(Map<String, Object> kwargs);
 
     private String promptType;
 

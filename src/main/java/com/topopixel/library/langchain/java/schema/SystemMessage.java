@@ -2,7 +2,8 @@ package com.topopixel.library.langchain.java.schema;
 
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class SystemMessage extends BaseMessage {
 

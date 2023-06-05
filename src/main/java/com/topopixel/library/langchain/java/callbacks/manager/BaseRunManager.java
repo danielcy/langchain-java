@@ -3,9 +3,10 @@ package com.topopixel.library.langchain.java.callbacks.manager;
 import com.topopixel.library.langchain.java.callbacks.base.BaseCallbackHandler;
 import com.topopixel.library.langchain.java.callbacks.base.RunManagerMixin;
 import java.util.*;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 public class BaseRunManager extends RunManagerMixin {
 
     private UUID runId;

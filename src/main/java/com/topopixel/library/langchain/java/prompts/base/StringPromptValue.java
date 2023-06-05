@@ -7,6 +7,7 @@ import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class StringPromptValue extends PromptValue {
 
     private String text;
