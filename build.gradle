@@ -13,7 +13,12 @@ repositories {
 
 dependencies {
     implementation 'org.projectlombok:lombok:1.18.20'
+    
+    // openai api
     implementation 'com.theokanning.openai-gpt3-java:service:0.12.0'
+    
+    // mysql
+    implementation 'mysql:mysql-connector-java:8.0.33'
     
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
