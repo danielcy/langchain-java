@@ -1,5 +1,6 @@
 package com.topopixel.library.langchain.java.chain.llm;
 
+import com.topopixel.library.langchain.java.callbacks.base.BaseCallbackHandler;
 import com.topopixel.library.langchain.java.callbacks.manager.CallbackManagerForChainRun;
 import com.topopixel.library.langchain.java.chain.base.Chain;
 import com.topopixel.library.langchain.java.exception.ValueErrorException;
@@ -84,6 +85,10 @@ public class LLMChain extends Chain {
             prompts.add(prompt);
         }
         return new PromptInput(prompts, stop);
+    }
+
+    public String predict(Map<String, Object> inputs, List<BaseCallbackHandler> callbacks) {
+        return String.valueOf(call(inputs, callbacks).get(outputKey));
     }
 
     @Data

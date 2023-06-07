@@ -104,11 +104,14 @@ public class SQLDatabase {
 
     public static SQLDatabaseBuilder uri(String uri, String username, String password) {
         try {
+            Connection engine;
             if (username == null && password == null) {
-                Connection engine = DriverManager.getConnection(uri);
-                return SQLDatabase.builder().engine(engine);
+                engine = DriverManager.getConnection(uri);
             }
-            Connection engine = DriverManager.getConnection(uri, username, password);
+            engine = DriverManager.getConnection(uri, username, password);
+            if (!"".equals(engine.getCatalog())) {
+                return SQLDatabase.builder().engine(engine).schema(engine.getCatalog());
+            }
             return SQLDatabase.builder().engine(engine);
         } catch (SQLException e) {
             throw new ValueErrorException("Cannot conntect to mysql with uri");
@@ -137,7 +140,6 @@ public class SQLDatabase {
             while (rs.next()) {
                 List<Object> row = new ArrayList<>();
                 for (int i = 1; i <= columnCount; i++) {
-//                    String columnName = metaData.getColumnLabel(i);
                     Object value = rs.getObject(i);
                     row.add(value);
                 }
@@ -154,20 +156,28 @@ public class SQLDatabase {
         }
     }
 
-//    public String getTableInfo(List<String> tableNames) {
-//        List<String> allNames = getUsableTableNames();
-//        List<String> allTableNames = allNames;
-//        if (tableNames != null) {
-//            List<String> missingTables = tableNames.stream()
-//                .filter(t -> !allNames.contains(t)).collect(Collectors.toList());
-//            if (!missingTables.isEmpty()) {
-//                throw new ValueErrorException(String.format("tableNames %s not found in database", missingTables.toString()));
-//            }
-//            allTableNames = tableNames;
-//        }
-//
-//
-//    }
+    public String getTableInfo() {
+        return getTableInfo(null);
+    }
+
+    public String getTableInfo(List<String> tableNames) {
+        List<String> allNames = getUsableTableNames();
+        List<String> allTableNames = allNames;
+        if (tableNames != null) {
+            List<String> missingTables = tableNames.stream()
+                .filter(t -> !allNames.contains(t)).collect(Collectors.toList());
+            if (!missingTables.isEmpty()) {
+                throw new ValueErrorException(String.format("tableNames %s not found in database", missingTables.toString()));
+            }
+            allTableNames = tableNames;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (String name: allTableNames) {
+            sb.append(getSingleTableInfo(name));
+        }
+        return sb.toString();
+    }
 
     public static String truncateWord(Object content, int length) {
         return truncateWord(content, length, null);
@@ -188,5 +198,47 @@ public class SQLDatabase {
             return contentStr;
         }
         return contentStr.substring(length - suffix.length()).split(" ")[0] + suffix;
+    }
+
+    private String getSingleTableInfo(String tableName) {
+        try {
+            StringBuilder sb = new StringBuilder("\n");
+            Statement stmt = engine.createStatement();
+            ResultSet rs = stmt.executeQuery("show create table " + tableName);
+            while (rs.next()) {
+                sb.append(rs.getString("Create Table"));
+            }
+            rs.close();
+
+            sb.append("\n\n")
+                .append("/*\n3 rows from " + tableName + " table:\n");
+
+            ResultSet sampleRs = stmt.executeQuery("select * from " + tableName + " limit 3");
+            ResultSetMetaData metaData = sampleRs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            List<String> rows = new ArrayList<>();
+            for (int i = 1; i <= columnCount; i++) {
+                rows.add(metaData.getColumnLabel(i));
+            }
+            sb.append(String.join("\t", rows)).append("\n");
+            // 3 rows sample data
+            while (sampleRs.next()) {
+                List<String> values = new ArrayList<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    Object value = sampleRs.getObject(i);
+                    values.add(String.valueOf(value));
+                }
+                sb.append(String.join("\t", values)).append("\n");
+            }
+
+            sb.append("*/\n")
+                .append("\n");
+            sampleRs.close();
+            stmt.close();
+            return sb.toString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }
