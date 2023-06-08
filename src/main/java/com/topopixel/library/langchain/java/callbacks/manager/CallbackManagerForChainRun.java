@@ -18,6 +18,10 @@ public class CallbackManagerForChainRun extends ChainManagerMixin {
         runManager = new RunManager(runId, handlers, inheritableHandlers, parentRunId);
     }
 
+    public CallbackManagerForChainRun(RunManager runManager) {
+        this.runManager = runManager;
+    }
+
     public CallbackManager getChild() {
         CallbackManager manager = new CallbackManager(new ArrayList<>(), runManager.getParentRunId());
         manager.setHandlers(runManager.getInheritableHandlers());
@@ -34,6 +38,10 @@ public class CallbackManagerForChainRun extends ChainManagerMixin {
         CallbackManagerUtils.handleEvent(runManager.getHandlers(), "onChainError",
             "isIgnoreChain", error, runManager.getRunId(),
             runManager.getParentRunId(), kwargs);
+    }
+
+    public static CallbackManagerForChainRun getNoopManager() {
+        return new CallbackManagerForChainRun((RunManager) RunManager.getNoopManager());
     }
 
     // TODO: agent
