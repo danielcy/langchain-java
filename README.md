@@ -31,7 +31,7 @@ public class Main {
     }
 }
 ```
-### 3. llm chain
+#### 3. llm chain
 ```java
 public class Main {
 
@@ -49,6 +49,41 @@ public class Main {
             .build();
         String result = chain.run(new HashMap<String, Object>(){{put("product", "colorful socks");}});
         System.out.println(result);
+    }
+}
+```
+####4. sql database(for now only support mysql)
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        // create a llm model
+        OpenAIConfig mysqlLLMConfig = OpenAIConfig.builder()
+            .temperature(0f)
+            .build();
+        OpenAI mysqlLLM = new OpenAI(mysqlLLMConfig);
+        // create a mysql prompt template
+        PromptTemplate mysqlTpl = SQLDatabasePrompts.MYSQL_PROMPT;
+        // make a LLMChain
+        LLMChain sqlChain = LLMChain.builder()
+            .llm(mysqlLLM)
+            .prompt(mysqlTpl)
+            .build();
+        
+        //create a database
+        SQLDatabase db = SQLDatabase.uri("jdbc:mysql://your_mysql_host/your_database").build();
+
+        // create a SQLDatabaseChain and inject LLMChain & Database
+        SQLDatabaseChain chain = SQLDatabaseChain.builder()
+            .llmChain(sqlChain)
+            .sqlDatabase(db)
+            .build();
+
+        System.out.println(chain.run(new HashMap<String, Object>(){{
+            put("query", "how many users are there");
+            put("table_names_to_use", 
+            new ArrayList<String>(Arrays.asList("your_table_1", "your_table_2")));
+        }}));
     }
 }
 ```
