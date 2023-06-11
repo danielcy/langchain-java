@@ -42,7 +42,7 @@ public class SQLDatabaseChain extends Chain {
     public SQLDatabaseChain(LLMChain llmChain, BaseLanguageModel llm, SQLDatabase sqlDatabase,
         BasePromptTemplate prompt, Integer topK, String inputKey, String outputKey,
         Boolean returnIntermediateSteps, Boolean returnDirect, Boolean useQueryChecker,
-        BasePromptTemplate queryCheckerPrompt) {
+        BasePromptTemplate queryCheckerPrompt, boolean verbose) {
 
         if (sqlDatabase == null) {
             throw new ValueErrorException("SqlDatabase cannot be null");
@@ -74,6 +74,7 @@ public class SQLDatabaseChain extends Chain {
         this.returnDirect = returnDirect != null ? returnDirect : false;
         this.useQueryChecker = useQueryChecker != null ? useQueryChecker : false;
         this.queryCheckerPrompt = queryCheckerPrompt;
+        this.verbose = verbose;
     }
 
     @Override

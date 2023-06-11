@@ -1,6 +1,7 @@
 package com.topopixel.library.langchain.java.callbacks.manager;
 
 import com.topopixel.library.langchain.java.callbacks.base.BaseCallbackHandler;
+import com.topopixel.library.langchain.java.callbacks.stdout.StdOutCallbackHandler;
 import com.topopixel.library.langchain.java.exception.NotImplementedException;
 import com.topopixel.library.langchain.java.schema.BaseMessage;
 import com.topopixel.library.langchain.java.schema.SchemaUtils;
@@ -12,12 +13,12 @@ import lombok.var;
 
 public class CallbackManagerUtils {
 
-    static <T> T configure(Class<T> clazz, List<BaseCallbackHandler> inheritableCallbacks,
+    static <T extends CallbackManager> T configure(Class<T> clazz, List<BaseCallbackHandler> inheritableCallbacks,
         List<BaseCallbackHandler> localCallbacks) {
         return configure(clazz, inheritableCallbacks, localCallbacks, false);
     }
 
-    static <T> T configure(Class<T> clazz, List<BaseCallbackHandler> inheritableCallbacks,
+    static <T extends CallbackManager> T configure(Class<T> clazz, List<BaseCallbackHandler> inheritableCallbacks,
         List<BaseCallbackHandler> localCallbacks, boolean verbose) {
         try {
             Constructor<T> defaultConst = clazz.getConstructor(List.class);
@@ -36,7 +37,14 @@ public class CallbackManagerUtils {
 
             // TODO: tracer
 
-            // TODO: verbose
+            // TODO: some other condition
+            if (verbose) {
+                if (verbose && callbackManager.getHandlers().stream()
+                .noneMatch(h -> h instanceof StdOutCallbackHandler)) {
+                    // TODO: debug
+                    callbackManager.addHandler(StdOutCallbackHandler.stdOutBuilder().build(), false);
+                }
+            }
 
             return callbackManager;
         } catch (Exception e) {
@@ -62,8 +70,16 @@ public class CallbackManagerUtils {
                         // no such ignore method
                     }
                 }
-                Method event = handler.getClass().getMethod(eventName);
-                event.invoke(args);
+                Method[] methods = handler.getClass().getMethods();
+                Method event = null;
+                for (Method method: methods) {
+                    if (eventName.equals(method.getName())) {
+                        event = method;
+                    }
+                }
+                if (event != null) {
+                    event.invoke(handler, args);
+                }
             } catch (NotImplementedException e) {
                 if ("onChatModelStart".equals(eventName)) {
                     if (messageStrings == null) {
@@ -85,6 +101,7 @@ public class CallbackManagerUtils {
                 }
             } catch (Exception e) {
                 // TODO: exception
+                e.printStackTrace();
             }
         }
     }

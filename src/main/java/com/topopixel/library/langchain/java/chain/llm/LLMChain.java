@@ -23,10 +23,11 @@ public class LLMChain extends Chain {
 
     @Builder
     public LLMChain(BasePromptTemplate prompt, BaseLanguageModel llm,
-        String outputKey) {
+        String outputKey, boolean verbose) {
         this.prompt = prompt;
         this.llm = llm;
         this.outputKey = outputKey != null ? outputKey : "text";
+        this.verbose = verbose;
     }
 
     @Override

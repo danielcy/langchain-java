@@ -57,11 +57,12 @@ public class Main {
         SQLDatabaseChain chain = SQLDatabaseChain.builder()
             .llmChain(sqlChain)
             .sqlDatabase(db)
+            .verbose(true)
             .build();
 
-        System.out.println(chain.run(new HashMap<String, Object>(){{
+        chain.run(new HashMap<String, Object>(){{
             put("query", "give me user named cy448219947's character type");
             put("table_names_to_use", new ArrayList<String>(Arrays.asList("unit", "user")));
-        }}));
+        }});
     }
 }
